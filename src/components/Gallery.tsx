@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ZoomIn, Heart, ArrowRight } from 'lucide-react';
 
@@ -144,6 +144,30 @@ export function Gallery() {
     activeFilter === 'ALL' ? true : item.category === activeFilter
   );
 
+  const [mobileIndex, setMobileIndex] = useState(0);
+
+  // Auto-play interval for mobile view (slowly rotates every 4.5 seconds)
+  useEffect(() => {
+    if (filteredItems.length <= 1) return;
+    const interval = setInterval(() => {
+      setMobileIndex((prev) => (prev + 1) % filteredItems.length);
+    }, 4505);
+    return () => clearInterval(interval);
+  }, [filteredItems.length]);
+
+  // Reset mobile index on filter category change
+  useEffect(() => {
+    setMobileIndex(0);
+  }, [activeFilter]);
+
+  const nextMobile = () => {
+    setMobileIndex((prev) => (prev + 1) % filteredItems.length);
+  };
+
+  const prevMobile = () => {
+    setMobileIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+  };
+
   return (
     <section id="gallery" className="py-24 bg-gray-fil-bg px-4 md:px-8 relative overflow-hidden">
       {/* Dynamic Grid Pattern */}
@@ -155,10 +179,10 @@ export function Gallery() {
         
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-800 tracking-tight uppercase font-display">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight uppercase font-display">
             Interactive Showcase
           </h2>
-          <p className="mt-4 text-slate-500 font-light leading-relaxed max-w-xl mx-auto text-xs sm:text-sm">
+          <p className="mt-4 text-slate-705 font-medium leading-relaxed max-w-xl mx-auto text-xs sm:text-sm">
             Filter our premium architectural catalog. Hover over any card for details and click to open the specification sheet.
           </p>
         </div>
@@ -180,10 +204,10 @@ export function Gallery() {
           ))}
         </div>
 
-        {/* Gallery Grid - Full image card design with no inner border gap padding */}
+        {/* Desktop Layout - Grid (hidden on mobile, grid on desktop) */}
         <motion.div 
           layout
-          className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8"
+          className="hidden sm:grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8"
         >
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item) => (
@@ -246,6 +270,89 @@ export function Gallery() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Mobile Layout - Rotating Carousel (sm:hidden) */}
+        {filteredItems.length > 0 && (
+          <div className="sm:hidden flex flex-col items-center gap-6 relative px-2 select-none w-full">
+            <div className="w-full flex items-center justify-between gap-3">
+              <button
+                onClick={prevMobile}
+                className="w-10 h-10 rounded-full bg-slate-200 border border-white shadow-[2px_2px_4px_#c2c7ce,-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-655 hover:bg-slate-300 cursor-pointer active:scale-90 focus:outline-none shrink-0"
+              >
+                ←
+              </button>
+              
+              {/* Single Active Card */}
+              <div className="flex-grow max-w-[280px]">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={filteredItems[mobileIndex].id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={() => setSelectedItem(filteredItems[mobileIndex])}
+                    className="relative aspect-square rounded-[36px] overflow-hidden cursor-pointer group border border-white shadow-[8px_8px_16px_#c2c7ce,-8px_-8px_16px_#ffffff] transition-all"
+                  >
+                    <img
+                      src={filteredItems[mobileIndex].src}
+                      alt={filteredItems[mobileIndex].title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+
+                    {/* Floating Heart Button */}
+                    <button
+                      onClick={(e) => toggleFavorite(filteredItems[mobileIndex].id, e)}
+                      className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100/80 hover:bg-white backdrop-blur-md border border-white/30 flex items-center justify-center transition-colors shadow-sm focus:outline-none cursor-pointer z-10 active:scale-90"
+                    >
+                      <Heart 
+                        className={`w-4 h-4 transition-colors ${
+                          favorites.includes(filteredItems[mobileIndex].id) ? 'fill-rose-500 text-rose-500' : 'text-slate-655 hover:text-rose-500'
+                        }`} 
+                      />
+                    </button>
+
+                    {/* Floating Category Tag */}
+                    <span className="absolute top-4 left-4 text-[9px] font-black uppercase tracking-wider bg-slate-800/80 text-slate-100 px-3 py-1 rounded-full border border-slate-700/50 backdrop-blur-md shadow-sm z-10">
+                      {filteredItems[mobileIndex].category}
+                    </span>
+
+                    {/* Static title and description overlay on mobile bottom */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 to-transparent p-6 pt-12 flex flex-col justify-end pointer-events-none">
+                      <h3 className="text-xs font-black text-white tracking-wider uppercase drop-shadow-sm truncate">
+                        {filteredItems[mobileIndex].title}
+                      </h3>
+                      <p className="text-[9px] text-slate-300 font-light leading-normal line-clamp-1 mt-1">
+                        {filteredItems[mobileIndex].description}
+                      </p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              <button
+                onClick={nextMobile}
+                className="w-10 h-10 rounded-full bg-slate-200 border border-white shadow-[2px_2px_4px_#c2c7ce,-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-655 hover:bg-slate-300 cursor-pointer active:scale-90 focus:outline-none shrink-0"
+              >
+                →
+              </button>
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex gap-1.5 mt-2 max-w-full overflow-x-auto py-1 px-2 scrollbar-none">
+              {filteredItems.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setMobileIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none shrink-0 ${
+                    mobileIndex === idx ? 'w-5 bg-slate-800' : 'w-1.5 bg-slate-400'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
 

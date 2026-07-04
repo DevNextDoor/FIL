@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, 
@@ -98,6 +98,23 @@ const CATEGORIES: CategoryItem[] = [
 
 export function CategoryGrid() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [mobileIndex, setMobileIndex] = useState(0);
+
+  const nextCategory = () => {
+    setMobileIndex((prev) => (prev + 1) % CATEGORIES.length);
+  };
+
+  const prevCategory = () => {
+    setMobileIndex((prev) => (prev - 1 + CATEGORIES.length) % CATEGORIES.length);
+  };
+
+  // Auto-play / auto-rotate category cards slowly on mobile (every 5 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMobileIndex((prev) => (prev + 1) % CATEGORIES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCardClick = (cat: CategoryItem) => {
     if (cat.type === 'scroll' && cat.scrollTarget) {
@@ -129,8 +146,8 @@ export function CategoryGrid() {
           CATEGORIES & INFORMATION
         </h2>
 
-        {/* 3x3 Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        {/* Desktop Layout - 3x3 Grid (hidden on mobile, grid on desktop) */}
+        <div className="hidden md:grid grid-cols-3 gap-6 sm:gap-8">
           {CATEGORIES.map((cat, idx) => {
             const Icon = cat.icon;
             return (
@@ -160,6 +177,68 @@ export function CategoryGrid() {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Mobile Layout: Rotatable Carousel (md:hidden) */}
+        <div className="md:hidden flex flex-col items-center gap-6 relative px-2 select-none">
+          <div className="w-full flex items-center justify-between gap-3">
+            <button
+              onClick={prevCategory}
+              className="w-10 h-10 rounded-full bg-slate-200 border border-white shadow-[2px_2px_4px_#c2c7ce,-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-655 hover:bg-slate-300 cursor-pointer active:scale-90 focus:outline-none"
+            >
+              ←
+            </button>
+            
+            {/* The single card */}
+            <div className="flex-grow max-w-[280px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={CATEGORIES[mobileIndex].id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => handleCardClick(CATEGORIES[mobileIndex])}
+                  className="neu-flat p-6 rounded-3xl flex flex-col items-center text-center gap-4 group cursor-pointer hover:shadow-[inset_4px_4px_8px_#c2c7ce,inset_-3px_-3px_6px_#ffffff] active:scale-98"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-slate-200 flex items-center justify-center border border-white shadow-[inset_4px_4px_8px_#c2c7ce,inset_-4px_-4px_8px_#ffffff] shrink-0">
+                    {(() => {
+                      const Icon = CATEGORIES[mobileIndex].icon;
+                      return <Icon className="w-6 h-6 text-slate-600" />;
+                    })()}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-black text-slate-800 tracking-wider uppercase group-hover:text-slate-900 transition-colors">
+                      {CATEGORIES[mobileIndex].title}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-normal font-light">
+                      {CATEGORIES[mobileIndex].desc}
+                    </p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <button
+              onClick={nextCategory}
+              className="w-10 h-10 rounded-full bg-slate-200 border border-white shadow-[2px_2px_4px_#c2c7ce,-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-655 hover:bg-slate-300 cursor-pointer active:scale-90 focus:outline-none"
+            >
+              →
+            </button>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex gap-1.5 mt-2">
+            {CATEGORIES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setMobileIndex(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none ${
+                  mobileIndex === idx ? 'w-5 bg-slate-800' : 'w-1.5 bg-slate-400'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -361,7 +440,7 @@ export function CategoryGrid() {
                     <div className="flex flex-col gap-4">
                       <div className="border-b border-slate-300 pb-3">
                         <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Design Journal • Article 24</span>
-                        <h4 className="text-base font-bold text-slate-850 uppercase tracking-wide mt-1">
+                        <h4 className="text-base font-bold text-slate-800 uppercase tracking-wide mt-1">
                           Solid Brass vs. SS-304: Choosing the Right Finish for High-Humidity Areas
                         </h4>
                       </div>

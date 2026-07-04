@@ -127,8 +127,8 @@ export function StatsSection() {
           </h2>
         </div>
 
-        {/* Stats Grid - Premium Neumorphic Layout */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        {/* Stats Grid - Premium Neumorphic Layout (Desktop only) */}
+        <div className="hidden lg:grid grid-cols-4 gap-6 sm:gap-8">
           {STATS.map((stat, idx) => {
             const IconComponent = stat.icon;
             return (
@@ -142,7 +142,7 @@ export function StatsSection() {
               >
                 {/* Icon Container */}
                 <div className="w-14 h-14 rounded-2xl bg-slate-200 flex items-center justify-center border border-white shadow-[inset_2.5px_2.5px_5px_#c2c7ce,inset_-2.5px_-2.5px_5px_#ffffff] mb-5">
-                  <IconComponent className="w-6 h-6 text-slate-650" />
+                  <IconComponent className="w-6 h-6 text-slate-655" />
                 </div>
                 
                 {/* Dynamic Value */}
@@ -162,6 +162,58 @@ export function StatsSection() {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Continuous Revolving Marquee Layout (Mobile/Tablet only) */}
+        <div className="lg:hidden relative w-full overflow-hidden py-4 mask-edges select-none">
+          <div className="flex gap-6 animate-marquee whitespace-nowrap min-w-max animate-[marquee_18s_linear_infinite]">
+            {/* First loop of cards */}
+            {STATS.map((stat, idx) => {
+              const IconComponent = stat.icon;
+              return (
+                <div
+                  key={`ticker-1-${idx}`}
+                  className="neu-flat p-6 rounded-[28px] border border-white flex flex-col items-center text-center w-48 shrink-0 inline-flex"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-slate-200 flex items-center justify-center border border-white shadow-[inset_2px_2px_4px_#c2c7ce,inset_-2px_-2px_4px_#ffffff] mb-4">
+                    <IconComponent className="w-5 h-5 text-slate-655" />
+                  </div>
+                  <h4 className="text-xl font-black text-slate-800 tracking-tight font-display leading-none">
+                    <CountUp end={stat.endValue} suffix={stat.suffix} />
+                  </h4>
+                  <p className="text-[10px] font-bold text-slate-800 tracking-wide uppercase mt-2.5 whitespace-normal">
+                    {stat.label}
+                  </p>
+                  <p className="text-[9px] text-slate-500 font-light mt-1 whitespace-normal">
+                    {stat.desc}
+                  </p>
+                </div>
+              );
+            })}
+            {/* Second loop of cards for seamless continuous scrolling */}
+            {STATS.map((stat, idx) => {
+              const IconComponent = stat.icon;
+              return (
+                <div
+                  key={`ticker-2-${idx}`}
+                  className="neu-flat p-6 rounded-[28px] border border-white flex flex-col items-center text-center w-48 shrink-0 inline-flex"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-slate-200 flex items-center justify-center border border-white shadow-[inset_2px_2px_4px_#c2c7ce,inset_-2px_-2px_4px_#ffffff] mb-4">
+                    <IconComponent className="w-5 h-5 text-slate-655" />
+                  </div>
+                  <h4 className="text-xl font-black text-slate-800 tracking-tight font-display leading-none">
+                    <CountUp end={stat.endValue} suffix={stat.suffix} />
+                  </h4>
+                  <p className="text-[10px] font-bold text-slate-800 tracking-wide uppercase mt-2.5 whitespace-normal">
+                    {stat.label}
+                  </p>
+                  <p className="text-[9px] text-slate-500 font-light mt-1 whitespace-normal">
+                    {stat.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

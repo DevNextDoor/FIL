@@ -1,89 +1,18 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { Search, MapPin, Sliders } from 'lucide-react';
 
 interface HeroSectionProps {
-  onSearch: (query: string) => void;
+  isPricingUnlocked: boolean;
+  onUnlockPricing: () => void;
 }
 
-const SUGGESTIONS = ['knobs', 'handles', 'brackets', 'brass', 'steel', 'chrome', 'gold', 'showroom'];
-
-const getLevenshteinDistance = (a: string, b: string): number => {
-  const tmp: number[][] = [];
-  let i, j;
-  if (a.length === 0) return b.length;
-  if (b.length === 0) return a.length;
-  for (i = 0; i <= a.length; i++) tmp[i] = [i];
-  for (j = 0; j <= b.length; j++) tmp[0][j] = j;
-  for (i = 1; i <= a.length; i++) {
-    for (j = 1; j <= b.length; j++) {
-      tmp[i][j] = Math.min(
-        tmp[i - 1][j] + 1,
-        tmp[i][j - 1] + 1,
-        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-      );
-    }
-  }
-  return tmp[a.length][b.length];
-};
-
-const getDidYouMean = (word: string): string | null => {
-  const lowerWord = word.trim().toLowerCase();
-  if (!lowerWord || SUGGESTIONS.includes(lowerWord)) return null;
-  
-  let bestMatch: string | null = null;
-  let minDistance = 3; // Limit distance threshold to 2 changes max
-  
-  for (const sug of SUGGESTIONS) {
-    const dist = getLevenshteinDistance(lowerWord, sug);
-    if (dist < minDistance) {
-      minDistance = dist;
-      bestMatch = sug;
-    }
-  }
-  return bestMatch;
-};
-
-export function HeroSection({ onSearch }: HeroSectionProps) {
-  const [query, setQuery] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.search-container')) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
-  }, []);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(query);
-    setDropdownOpen(false);
-    scrollToCatalog();
-  };
-
-  const handleFilterClick = (filterCategory: string) => {
-    onSearch(filterCategory);
-    setDropdownOpen(false);
-    scrollToCatalog();
-  };
-
+export function HeroSection({ isPricingUnlocked, onUnlockPricing }: HeroSectionProps) {
   const scrollToCatalog = () => {
     const element = document.getElementById('products');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
-  const didYouMean = getDidYouMean(query);
-
-  const filteredSuggestions = query
-    ? SUGGESTIONS.filter((sug) => sug.toLowerCase().includes(query.toLowerCase()))
-    : ['knobs', 'handles', 'brackets', 'brass']; // Default popular matches when empty
 
   return (
     <section id="hero" className="relative min-h-[92vh] w-full flex items-center justify-center overflow-hidden pt-24 pb-16 px-4 md:px-8">
@@ -121,88 +50,24 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
           </motion.p>
         </div>
 
-        {/* Search, spelling correction & autocomplete dropdown */}
+        {/* WhatsApp Direct Link Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-col gap-3.5 items-start w-full"
         >
-          {/* Autocomplete Search Container */}
-          <div className="search-container relative z-40">
-            <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-5 py-3 transition-all duration-300 group">
-              <input 
-                type="text" 
-                placeholder="Search catalog..." 
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setDropdownOpen(true);
-                }}
-                onFocus={() => setDropdownOpen(true)}
-                className="bg-transparent text-white placeholder-slate-300 focus:outline-none text-sm w-44 sm:w-60"
-              />
-              <button type="submit" className="cursor-pointer focus:outline-none text-white ml-2 flex items-center gap-1">
-                <span className="text-xs font-bold uppercase tracking-wider group-hover:mr-1 transition-all">Go</span>
-                <span className="text-lg">→</span>
-              </button>
-            </form>
-
-            {/* Floating Suggestions Dropdown */}
-            <AnimatePresence>
-              {dropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 5 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-slate-950/95 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl z-50 p-2 overflow-hidden flex flex-col gap-0.5"
-                >
-                  <div className="text-[9px] font-black text-slate-450 uppercase tracking-widest px-3 py-1.5 border-b border-white/5 select-none">
-                    {query ? 'Suggested Matches' : 'Trending Searches'}
-                  </div>
-                  {filteredSuggestions.map((sug) => (
-                    <button
-                      key={sug}
-                      type="button"
-                      onClick={() => {
-                        setQuery(sug);
-                        onSearch(sug);
-                        setDropdownOpen(false);
-                        scrollToCatalog();
-                      }}
-                      className="text-left text-xs font-bold text-white hover:bg-white/10 px-3 py-2.5 rounded-xl transition-colors cursor-pointer w-full focus:outline-none capitalize"
-                    >
-                      {sug}
-                    </button>
-                  ))}
-                  {filteredSuggestions.length === 0 && (
-                    <span className="text-left text-[11px] text-slate-400 px-3 py-2.5 select-none">
-                      No matching hardware found
-                    </span>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Spell check / Typo correction Did-You-Mean helper */}
-          {didYouMean && (
-            <div className="text-xs text-slate-300 select-none ml-2">
-              Did you mean:{' '}
-              <button
-                onClick={() => {
-                  setQuery(didYouMean);
-                  onSearch(didYouMean);
-                  setDropdownOpen(false);
-                  scrollToCatalog();
-                }}
-                className="underline text-white font-bold cursor-pointer hover:text-slate-200 focus:outline-none bg-transparent border-none p-0 inline"
-              >
-                {didYouMean}
-              </button>
-              ?
-            </div>
-          )}
+          <a 
+            href="https://wa.me/+919997773393?text=Hi!+I'm+interested+in+Frink+International+hardware+products."
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-full px-6 py-3.5 text-white font-bold text-xs min-[380px]:text-sm uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-md group cursor-pointer whitespace-nowrap"
+          >
+            <svg className="w-5 h-5 fill-emerald-400 group-hover:scale-110 transition-transform shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.284 1.48 4.961 1.482 5.485.002 9.947-4.46 9.949-9.949.001-2.66-1.018-5.161-2.87-7.015C16.877 1.816 14.382.793 11.72.793c-5.485 0-9.948 4.46-9.95 9.95-.001 2.014.526 3.985 1.528 5.722l-.99 3.61 3.749-.983zm12.355-6.68c-.282-.14-1.664-.82-1.923-.914-.258-.095-.446-.14-.633.14-.188.28-.728.914-.89 1.1-.164.18-.327.201-.61.06-2.812-1.4-4.63-2.9-6.07-5.4-.15-.258.15-.24.43-.797.106-.207.053-.388-.026-.53-.079-.14-.633-1.523-.867-2.09-.228-.547-.46-.473-.633-.482-.163-.008-.35-.01-.537-.01-.188 0-.492.07-.75.352-.258.28-.984.962-.984 2.344 0 1.382 1.008 2.72 1.148 2.91.14.18 1.985 3.03 4.81 4.25.672.291 1.2.464 1.61.595.676.214 1.29.183 1.777.11.542-.081 1.664-.68 1.9-.1.336 2.36.082 2.47-.052 2.65-.138.183-.344.258-.628.118z"/>
+            </svg>
+            Let's connect with WhatsApp
+          </a>
         </motion.div>
 
         {/* Floating Neumorphic Filter Bar (Inspired by references: Rent, Price, Street search) */}
@@ -226,14 +91,14 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
 
             {/* Filter 2 - Interactive quick filters */}
             <div 
-              onClick={() => handleFilterClick('Knobs')}
+              onClick={scrollToCatalog}
               className="flex flex-col px-4 border-b sm:border-b-0 sm:border-r border-slate-300/40 pb-4 sm:pb-0 cursor-pointer hover:bg-slate-200/40 py-2 rounded-2xl transition-all"
             >
               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 mb-1">
                 <Sliders className="w-3.5 h-3.5 text-slate-500" />
                 Product Line
               </span>
-              <span className="text-sm font-extrabold text-slate-850 hover:underline">
+              <span className="text-sm font-extrabold text-slate-800 hover:underline">
                 Premium Knobs & Fittings
               </span>
             </div>
@@ -244,16 +109,25 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">
                   Starting Price
                 </span>
-                <span className="text-sm font-extrabold text-slate-800">
-                  ₹299 / Unit
-                </span>
+                {isPricingUnlocked ? (
+                  <span className="text-sm font-extrabold text-slate-800">
+                    ₹299 / Unit
+                  </span>
+                ) : (
+                  <button
+                    onClick={onUnlockPricing}
+                    className="text-xs font-extrabold text-slate-800 underline hover:text-slate-950 cursor-pointer focus:outline-none text-left"
+                  >
+                    Unlock Pricing
+                  </button>
+                )}
               </div>
 
               <button 
                 onClick={scrollToCatalog}
-                className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer"
+                className="flex items-center gap-1.5 sm:gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-[10px] min-[320px]:text-[11px] sm:text-xs uppercase tracking-wider px-3 py-3 sm:px-6 sm:py-3.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Find Catalog
               </button>
             </div>

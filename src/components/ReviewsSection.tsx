@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
@@ -61,12 +61,20 @@ export function ReviewsSection() {
   const [startIndex, setStartIndex] = useState(0);
 
   const nextSlide = () => {
-    setStartIndex((prev) => (prev + 1) % (REVIEWS.length - 1));
+    setStartIndex((prev) => (prev + 1) % REVIEWS.length);
   };
 
   const prevSlide = () => {
-    setStartIndex((prev) => (prev - 1 + (REVIEWS.length - 1)) % (REVIEWS.length - 1));
+    setStartIndex((prev) => (prev - 1 + REVIEWS.length) % REVIEWS.length);
   };
+
+  // Auto-play / auto-rotate reviews slowly (every 6 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStartIndex((prev) => (prev + 1) % REVIEWS.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   const activeReviews = [
     REVIEWS[startIndex],
@@ -128,14 +136,16 @@ export function ReviewsSection() {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AnimatePresence mode="wait">
-              {activeReviews.map((rev) => (
+              {activeReviews.map((rev, cardIdx) => (
                 <motion.div
                   key={rev.id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-zinc-850/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg relative group hover:border-zinc-700 transition-all duration-300"
+                  className={`bg-zinc-850/80 backdrop-blur-md border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between min-h-[220px] shadow-lg relative group hover:border-zinc-700 transition-all duration-300 ${
+                    cardIdx === 1 ? 'hidden md:flex' : 'flex'
+                  }`}
                 >
                   <div>
                     {/* Header */}
@@ -152,7 +162,7 @@ export function ReviewsSection() {
                     </div>
 
                     {/* Comment */}
-                    <p className="text-xs text-zinc-350 leading-relaxed font-light mb-4">
+                    <p className="text-xs text-zinc-355 leading-relaxed font-light mb-4">
                       &quot;{rev.comment}&quot;
                     </p>
                   </div>
@@ -179,12 +189,12 @@ export function ReviewsSection() {
 
           {/* Slider dots indicator */}
           <div className="flex justify-center gap-1.5 mt-4">
-            {[...Array(REVIEWS.length - 1)].map((_, idx) => (
+            {REVIEWS.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setStartIndex(idx)}
                 className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none ${
-                  startIndex === idx ? 'w-5 bg-white' : 'w-1.5 bg-zinc-600'
+                  startIndex === idx ? 'w-5 bg-white' : 'w-1.5 bg-zinc-650'
                 }`}
               />
             ))}
