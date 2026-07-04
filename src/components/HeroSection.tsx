@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Search, MapPin, Sparkles, Sliders } from 'lucide-react';
+import { Search, MapPin, Sliders } from 'lucide-react';
 
 interface HeroSectionProps {
   onSearch: (query: string) => void;
