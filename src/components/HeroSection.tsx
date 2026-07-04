@@ -40,18 +40,7 @@ export function HeroSection({ onSearch }: HeroSectionProps) {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:40px_40px] z-10" />
 
       <div className="relative z-20 max-w-7xl w-full flex flex-col items-start justify-center gap-8 mt-8">
-        {/* Top Premium Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-sm"
-        >
-          <Sparkles className="w-4 h-4 text-slate-300 animate-pulse" />
-          <span className="text-xs font-bold text-slate-200 tracking-wider uppercase">
-            Est. 2026 • Premium Hardware & Fittings
-          </span>
-        </motion.div>
+
 
         {/* Title Block */}
         <div className="max-w-3xl">

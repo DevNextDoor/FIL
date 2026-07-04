@@ -40,6 +40,8 @@ export function Navbar() {
     }, 120);
   };
 
+  const isDarkText = detached && !menuOpen;
+
   return (
     <motion.nav
       style={{
@@ -82,10 +84,14 @@ export function Navbar() {
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-display font-extrabold text-[16px] leading-tight tracking-tight text-slate-800">
+            <span className={`font-display font-extrabold text-[16px] leading-none tracking-tight transition-colors duration-300 ${
+              isDarkText ? 'text-slate-800' : 'text-white'
+            }`}>
               FRINK
             </span>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest leading-none">
+            <span className={`text-[9px] font-bold uppercase tracking-widest leading-none mt-1 transition-colors duration-300 ${
+              isDarkText ? 'text-slate-500' : 'text-white/70'
+            }`}>
               INTERNATIONAL
             </span>
           </div>
@@ -108,7 +114,11 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => scrollToSection('contact')}
-            className="hidden sm:flex items-center gap-1 bg-slate-800 text-slate-100 hover:bg-slate-900 hover:text-white px-5 py-2 rounded-full text-[13px] font-bold shadow-md cursor-pointer transition-all focus:outline-none whitespace-nowrap"
+            className={`hidden sm:flex items-center gap-1 px-5 py-2 rounded-full text-[13px] font-bold shadow-md cursor-pointer transition-all focus:outline-none whitespace-nowrap ${
+              isDarkText
+                ? 'bg-slate-800 text-slate-100 hover:bg-slate-900 hover:text-white'
+                : 'bg-white text-slate-900 hover:bg-slate-100'
+            }`}
           >
             Get Quote
             <ChevronRight className="w-4 h-4" />
@@ -116,7 +126,11 @@ export function Navbar() {
 
           <button
             onClick={() => setMenuOpen((open) => !open)}
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-200/70 border border-white/50 text-slate-700 hover:bg-slate-300/50 cursor-pointer transition-all duration-200 focus:outline-none"
+            className={`md:hidden w-10 h-10 flex items-center justify-center rounded-xl border cursor-pointer transition-all duration-200 focus:outline-none ${
+              isDarkText
+                ? 'bg-slate-200/70 border-white/50 text-slate-700 hover:bg-slate-350/50'
+                : 'bg-white/10 border-white/10 text-white hover:bg-white/20'
+            }`}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -146,29 +160,29 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Panel */}
+      {/* Mobile Menu Panel - Styled as a Solid, Frosted Dark Zinc Floating Container */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="w-full overflow-hidden md:hidden mt-2 border-t border-slate-200/50"
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="w-full overflow-hidden md:hidden mt-3 rounded-2xl bg-zinc-950/95 backdrop-blur-xl border border-zinc-900 shadow-2xl p-4"
           >
-            <div className="flex flex-col gap-1 py-3 px-1">
+            <div className="flex flex-col gap-1.5 py-1">
               {NAV_LINKS.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="text-left text-[14px] font-semibold text-slate-700 hover:text-slate-900 px-4 py-3 rounded-xl hover:bg-slate-200/60 cursor-pointer transition-colors duration-200 focus:outline-none"
+                  className="text-left text-[14px] font-bold uppercase tracking-wider text-zinc-300 hover:text-white px-4 py-3 rounded-xl hover:bg-zinc-900/60 cursor-pointer transition-colors duration-200 focus:outline-none"
                 >
                   {link.label}
                 </button>
               ))}
               <button
                 onClick={() => scrollToSection('contact')}
-                className="flex items-center justify-center gap-1 mt-2 bg-slate-800 text-white py-3.5 rounded-xl text-[14px] font-semibold shadow-md cursor-pointer transition-colors focus:outline-none"
+                className="flex items-center justify-center gap-1 mt-3 bg-white hover:bg-zinc-100 text-zinc-950 py-3.5 rounded-xl text-[14px] font-bold uppercase tracking-wider shadow-md cursor-pointer transition-colors focus:outline-none"
               >
                 Get Quote
                 <ChevronRight className="w-4 h-4" />
