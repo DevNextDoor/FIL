@@ -24,7 +24,7 @@ export function SiteFooter() {
           <div className="flex items-center gap-2 select-none">
             <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center border border-zinc-800 shadow-sm overflow-hidden">
               <img 
-                src="/images/logo.jpg" 
+                src="/images/logo.png" 
                 alt="Frink Logo" 
                 className="w-full h-full object-cover"
               />

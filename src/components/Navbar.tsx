@@ -76,7 +76,7 @@ export function Navbar() {
         >
           <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center border border-white/40 shadow-sm group-hover:scale-105 transition-transform duration-200 overflow-hidden">
             <img 
-              src="/images/logo.jpg" 
+              src="/images/logo.png" 
               alt="Frink Logo" 
               className="w-full h-full object-cover"
             />
