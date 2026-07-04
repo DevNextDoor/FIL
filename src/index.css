@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  
+  --color-gray-fil-bg: #e8ecf1;
+  --color-gray-fil-surface: #e8ecf1;
+  --color-gray-fil-text: #2c3038;
+  --color-gray-fil-primary: #4b5262;
+  --color-gray-fil-accent: #6f788b;
+
+  --animate-marquee: marquee 45s linear infinite;
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+@layer utilities {
+  /* Tactile Neumorphism (Soft Metallic Slate/Grey) */
+  .neu-flat {
+    background: #e8ecf1;
+    box-shadow: 6px 6px 14px #c2c7ce, -6px -6px 14px #ffffff;
+  }
+  
+  .neu-flat-sm {
+    background: #e8ecf1;
+    box-shadow: 4px 4px 8px #c2c7ce, -4px -4px 8px #ffffff;
+  }
+
+  .neu-concave {
+    background: linear-gradient(145deg, #d1d5db, #ffffff);
+    box-shadow: 6px 6px 14px #c2c7ce, -6px -6px 14px #ffffff;
+  }
+
+  .neu-convex {
+    background: linear-gradient(145deg, #ffffff, #d1d5db);
+    box-shadow: 6px 6px 14px #c2c7ce, -6px -6px 14px #ffffff;
+  }
+
+  .neu-inset {
+    background: #e8ecf1;
+    box-shadow: inset 5px 5px 10px #c2c7ce, inset -5px -5px 10px #ffffff;
+  }
+  
+  .neu-inset-sm {
+    background: #e8ecf1;
+    box-shadow: inset 3px 3px 6px #c2c7ce, inset -3px -3px 6px #ffffff;
+  }
+
+  /* Dark Metallic Neumorphism for high-contrast slate buttons/accents */
+  .neu-dark-flat {
+    background: #3a3f4b;
+    box-shadow: 6px 6px 14px #262931, -6px -6px 14px #4e5565;
+  }
+  
+  .neu-dark-inset {
+    background: #3a3f4b;
+    box-shadow: inset 4px 4px 8px #262931, inset -4px -4px 8px #4e5565;
+  }
+
+  /* Interactive pop states */
+  .neu-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .neu-btn:hover {
+    box-shadow: 3px 3px 6px #c2c7ce, -3px -3px 6px #ffffff;
+    transform: translateY(-1px);
+  }
+  
+  .neu-btn:active {
+    box-shadow: inset 4px 4px 8px #c2c7ce, inset -4px -4px 8px #ffffff;
+    transform: translateY(1px);
+  }
+
+  .neu-dark-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .neu-dark-btn:hover {
+    box-shadow: 3px 3px 6px #262931, -3px -3px 6px #4e5565;
+    transform: translateY(-1px);
+  }
+  
+  .neu-dark-btn:active {
+    box-shadow: inset 4px 4px 8px #262931, inset -4px -4px 8px #4e5565;
+    transform: translateY(1px);
+  }
+  
+  /* Textures */
+  .brushed-metal {
+    background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.05) 100%), linear-gradient(135deg, #e8ecf1 0%, #cbd5e1 100%);
+  }
+
+  .mask-edges {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+}
+
+html,
+body,
+#root {
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+  background-color: #e8ecf1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
