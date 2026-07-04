@@ -1,12 +1,7 @@
 import { motion } from 'motion/react';
 import { Search, MapPin, Sliders } from 'lucide-react';
 
-interface HeroSectionProps {
-  isPricingUnlocked: boolean;
-  onUnlockPricing: () => void;
-}
-
-export function HeroSection({ isPricingUnlocked, onUnlockPricing }: HeroSectionProps) {
+export function HeroSection() {
   const scrollToCatalog = () => {
     const element = document.getElementById('products');
     if (element) {

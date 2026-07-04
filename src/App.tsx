@@ -20,10 +20,7 @@ export default function App() {
       <Navbar />
       <main className="w-full flex-grow flex flex-col">
         {/* Hero Banner Section */}
-        <HeroSection 
-          isPricingUnlocked={isPricingUnlocked} 
-          onUnlockPricing={() => setShowLeadModal(true)} 
-        />
+        <HeroSection />
         
         {/* Services / Discover Section (New) */}
         <ServicesSection />
